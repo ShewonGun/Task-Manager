@@ -60,13 +60,51 @@ export const registerUser = async (req, res) => {
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
-export const loginUser = async (req, res) => { }
+export const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Check if user exists
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        // Check password
+        const isMatch = await bcrypt.compare(password, user.password); 
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        // Return user with token
+        res.status(200).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            profileImageUrl: user.profileImageUrl,
+            role: user.role,
+            token: generateToken(user._id),
+        });
+} catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+}
 
 
 // @desc    Get user profile
 // @route   GET /api/auth/profile
 // @access  Private
-export const getUserProfile = async (req, res) => { };
+export const getUserProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
 
 
 // @desc    Update user profile
