@@ -110,7 +110,42 @@ export const getUserProfile = async (req, res) => {
 // @desc    Update user profile
 // @route   PUT /api/auth/profile
 // @access  Private
-export const updateUserProfile = async (req, res) => { }
+export const updateUserProfile = async (req, res) => {
+    try {
+        const { name, email, password, profileImageUrl } = req.body;
+
+        // Find user and update
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Update fields
+        user.name = name || user.name;
+        user.email = email || user.email;
+        //user.profileImageUrl = profileImageUrl || user.profileImageUrl;
+
+        // Hash password if provided
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+        }
+
+        const updatedUser = await user.save();
+
+        res.status(200).json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            profileImageUrl: updatedUser.profileImageUrl,
+            role: updatedUser.role,
+            token: generateToken(updatedUser._id),
+        });
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+}
 
 
 
