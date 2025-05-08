@@ -1,5 +1,14 @@
 import mongoose from "mongoose";
 
+const todoSchema = new mongoose.Schema(
+    {
+        task: { type: String, required: true },
+        completed: { type: Boolean, default: false },
+    },
+    { timestamps: true }
+);
+
+
 const taskSchema = new mongoose.Schema(
     {
         title: { type: String, required: true },
@@ -16,4 +25,8 @@ const taskSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("Task", taskSchema);
+
+
+const Task =  mongoose.model("Task", taskSchema);
+
+export default Task;
