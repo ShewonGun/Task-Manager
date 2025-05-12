@@ -6,6 +6,7 @@ import connectDB from './config/db.js'; // Make sure the file exports using `exp
 import authRoutes from './routes/authRoutes.js'; // Import your auth routes
 import userRoutes from './routes/userRoutes.js'; // Import your user routes
 import taskRoutes from './routes/taskRoutes.js'; // Import your task routes
+import reportRoutes from './routes/reportRoutes.js'; // Import your report routes
 
 dotenv.config();
 
@@ -32,7 +33,7 @@ connectDB();
 app.use("/api/auth",authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/tasks", taskRoutes);
-//app.use("/api/reports", retportRoutes);
+app.use("/api/reports", reportRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
